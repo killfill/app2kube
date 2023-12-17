@@ -1,0 +1,17 @@
+name: my-app
+namespace: default
+image: nginx
+port: 80
+env:
+  THIS: THAT
+  EXPANDED_VAR: $HOME
+annotations:
+  mira: sip
+labels:
+  mira: nop
+imagePullSecret: killfill
+replicas: 2
+ingress:
+  # class: nginx
+  hostname: test.example.com
+  tls: false
