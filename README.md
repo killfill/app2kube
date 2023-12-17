@@ -6,7 +6,7 @@ Generate kube manifests (deployment, service, ingress) from small `app.yaml` fil
 
 ```bash
 git clone https://github.com/killfill/app2kube.git
-sudo ln -s $(pwd)/app2kube/run.sh /usr/local/bin/app2kube
+sudo ln -s $(pwd)/app2kube/run.sh /usr/local/bin/deploy
 ```
 
 # Usage
@@ -23,5 +23,6 @@ ingress:
 Then, just run:
 
 ```bash
-app2kube apply
+deploy -h
+deploy apply
 ```

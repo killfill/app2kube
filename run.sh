@@ -5,7 +5,7 @@ dir=$(dirname "$runfile")
 appfile="app.yaml"
 
 function show_usage() {
-    echo "Usage: $0 apply|delete|dump [-f app.yaml]"
+    echo "Usage: $0 apply|delete|dump|build|push|inspect [-f app.yaml]"
     exit 0
 }
 
@@ -28,6 +28,7 @@ done
 
 [ ! -f "$appfile" ] && echo "File $appfile does not exists" && show_usage
 source="$(cat $appfile | envsubst)"
+tag=$(yq .image < $appfile)
 
 case $command in
     apply)
@@ -38,6 +39,15 @@ case $command in
         ;;
     dump)
         kcl run $dir/load.k $dir/render_kube.k -D source="$source"
+        ;;
+    build)
+        docker buildx build --platform linux/amd64 --load -t $tag .
+        ;;
+    push)
+        docker push $tag
+        ;;
+    inspect)
+        docker run --rm -it $tag bash
         ;;
     *)
         show_usage

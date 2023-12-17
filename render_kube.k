@@ -33,6 +33,8 @@ kubeRender = lambda app: model.WebApp {
                         ports = [{containerPort = app.port}]
                         env = [{name: k, value: app.env[k]} for k in app.env]
                     }]
+                    if app.imagePullSecret:
+                        imagePullSecrets = [{name = app.imagePullSecret}]
                 }
             }
         }
