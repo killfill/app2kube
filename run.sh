@@ -5,7 +5,7 @@ dir=$(dirname "$runfile")
 appfile="deploy.yaml"
 
 function show_usage() {
-    echo "Usage: $0 apply|delete|dump|build|push|inspect [-f deploy.yaml]"
+    echo "Usage: $0 apply|delete|dump|build|push|run|inspect [-f deploy.yaml]"
     exit 0
 }
 
@@ -47,7 +47,10 @@ case $command in
         docker push $tag
         ;;
     inspect)
-        docker run --rm -it $tag bash
+        docker run --rm -it -P $tag bash
+        ;;
+    run)
+        docker run --rm -it -P $tag
         ;;
     *)
         show_usage
