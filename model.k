@@ -9,6 +9,7 @@ schema WebApp:
     imagePullSecret: str = ""
     replicas: int = 1
     ingress?: Ingress
+    command?: [str] = None
 
 schema Ingress:
     hostname: str

@@ -1,6 +1,6 @@
 # App2Kube
 
-Generate kube manifests (deployment, service, ingress) from small `app.yaml` files.
+Generate kube manifests (deployment, service, ingress) from small `deploy.yaml` files.
 
 # Installation
 
@@ -11,7 +11,7 @@ sudo ln -s $(pwd)/app2kube/run.sh /usr/local/bin/deploy
 
 # Usage
 
-Define an app.yaml file, like this:
+Define an deploy.yaml file, like this:
 
 ```yaml
 name: an-app

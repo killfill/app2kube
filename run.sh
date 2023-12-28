@@ -2,10 +2,10 @@
 
 runfile=$(readlink "$0" || echo "$0")
 dir=$(dirname "$runfile")
-appfile="app.yaml"
+appfile="deploy.yaml"
 
 function show_usage() {
-    echo "Usage: $0 apply|delete|dump|build|push|inspect [-f app.yaml]"
+    echo "Usage: $0 apply|delete|dump|build|push|inspect [-f deploy.yaml]"
     exit 0
 }
 
