@@ -27,6 +27,10 @@ kubeRender = lambda app: model.WebApp {
                     labels = {app = app.name}
                 }
                 spec = {
+                    if app.runAsUser > -1:
+                        securityContext = {
+                            runAsUser = app.runAsUser
+                        }
                     containers = [{
                         name = "main"
                         image = app.image
@@ -34,9 +38,20 @@ kubeRender = lambda app: model.WebApp {
                         env = [{name: k, value: app.env[k]} for k in app.env]
                         if app.command:
                             command = app.command
+                        volumeMounts = [{
+                            name = vol.name
+                            mountPath = vol.path
+                        } for vol in app.volumes]
                     }]
                     if app.imagePullSecret:
                         imagePullSecrets = [{name = app.imagePullSecret}]
+                    volumes = [{
+                        name = vol.name
+                        if vol.type == "pvc":
+                            persistentVolumeClaim.claimName = app.name + '-' + vol.name
+                        if vol.type == "emptyDir":
+                            emptyDir = {}
+                    } for vol in app.volumes]
                 }
             }
         }
@@ -54,7 +69,8 @@ kubeRender = lambda app: model.WebApp {
         if app.ingress.tls:
             metadata.annotations = app.annotations | {"kubernetes.io/tls-acme": "true"}
         spec = k8snet.IngressSpec {
-            ingressClassName = app.ingress.class or None
+            if app.ingress.class:
+                ingressClassName = app.ingress.class
             rules = [{
                 host = app.ingress.hostname
                 http.paths = [{
@@ -72,8 +88,18 @@ kubeRender = lambda app: model.WebApp {
         if app.ingress.tls:
             spec.tls = [{hosts = [app.ingress.hostname], secretName = "ingress-tls-${app.name}"}]
     }
+    _pvcs = [k8core.PersistentVolumeClaim {
+        metadata = _common_metadata
+        metadata.name = metadata.name + '-' + vol.name
+        spec = k8core.PersistentVolumeClaimSpec {
+            accessModes = ["ReadWriteOnce"]
+            resources = k8core.ResourceRequirements {
+                requests = {storage: vol.size}
+            }
+        }
+    } for vol in app.volumes if vol.type == "pvc"]
     #Looks like the return value is the last statement
-    [_deployment, _service, _ingress]
+    [_deployment, _service, _ingress, _pvcs]
 }
 
 manifests.yaml_stream(sum([kubeRender(app) for app in model.WebApp.instances()], []))

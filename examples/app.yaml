@@ -15,3 +15,10 @@ ingress:
   # class: nginx
   hostname: test.example.com
   tls: false
+volumes:
+  - name: hi1
+    path: /hi-volume
+    type: emptyDir
+  - name: hi2
+    path: /hi-again
+    size: 20Gi

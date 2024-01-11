@@ -10,9 +10,19 @@ schema WebApp:
     replicas: int = 1
     ingress?: Ingress
     command?: [str] = None
+    volumes?: [Volume]
+    runAsUser?: int = -1
 
 schema Ingress:
     hostname: str
     class: str = ""
     tls: bool = False
     path: str = "/"
+
+schema Volume:
+    name: str
+    path: str
+    size: str = "10Gi"
+    type: "emptyDir" | "pvc" = "pvc"
+    check:
+        path not in ["/", "/boot", "/home", "dev", "/etc", "/root"]

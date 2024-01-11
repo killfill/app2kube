@@ -41,7 +41,9 @@ case $command in
         kcl run $dir/load.k $dir/render_kube.k -D source="$source"
         ;;
     build)
-        docker buildx build --platform linux/amd64 --load -t $tag .
+        [ -f Dockerfile ] \
+            && docker buildx build --platform linux/amd64 --load -t $tag . \
+            || command pack &> /dev/null && pack build $tag $@ || echo "No Dockerfile or pack CLI found. Cannot build image"
         ;;
     push)
         docker push $tag
