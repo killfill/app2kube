@@ -10,7 +10,7 @@ schema WebApp:
     replicas: int = 1
     ingress?: Ingress
     command?: [str] = None
-    volumes?: [Volume]
+    volumes?: [Volume] = []
     runAsUser?: int = -1
 
 schema Ingress:
