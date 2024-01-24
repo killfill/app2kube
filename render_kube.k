@@ -21,6 +21,10 @@ kubeRender = lambda app: model.WebApp {
         spec = {
             replicas: app.replicas
             selector.matchLabels = {app = app.name}
+            if app.strategy:
+                strategy = {
+                    type = app.strategy
+                }
             template = {
                 metadata = {
                     annotations = app.annotations | _def_annotations
@@ -38,10 +42,19 @@ kubeRender = lambda app: model.WebApp {
                         env = [{name: k, value: app.env[k]} for k in app.env]
                         if app.command:
                             command = app.command
+                        if app.requests or app.limits:
+                            resources = {
+                                if app.requests:
+                                    requests = {
+                                        cpu = app.requests.cpu
+                                        memory = app.requests.memory
+                                    }
+                            }
                         volumeMounts = [{
                             name = vol.name
                             mountPath = vol.path
                         } for vol in app.volumes]
+
                     }]
                     if app.imagePullSecret:
                         imagePullSecrets = [{name = app.imagePullSecret}]

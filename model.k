@@ -12,6 +12,9 @@ schema WebApp:
     command?: [str] = None
     volumes?: [Volume] = []
     runAsUser?: int = -1
+    requests?: ResourceDef = None
+    limits?: ResourceDef = None
+    strategy?: "RollingUpdate" | "Recreate" = None
 
 schema Ingress:
     hostname: str
@@ -26,3 +29,7 @@ schema Volume:
     type: "emptyDir" | "pvc" = "pvc"
     check:
         path not in ["/", "/boot", "/home", "dev", "/etc", "/root"]
+
+schema ResourceDef:
+    cpu: str = None
+    memory: str = None
