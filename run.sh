@@ -41,6 +41,10 @@ case $command in
         kcl run $dir/load.k $dir/render_kube.k -D source="$source"
         ;;
     build)
+        created=$(docker image inspect $tag 2>/dev/null | jq -r ".[0].Created")
+        if [ "$created" != "null" ]; then
+            echo "WARNING: Image $tag already exists, it was created on ${created}. "
+        fi
         [ -f Dockerfile ] && docker buildx build --platform linux/amd64 --load -t $tag .
         [ ! -f Dockerfile ] && (command pack &> /dev/null && pack build $tag $@ || echo "No Dockerfile or pack CLI found. Cannot build image")
         ;;
