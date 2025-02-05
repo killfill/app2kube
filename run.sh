@@ -45,7 +45,15 @@ case $command in
         if [ "$created" != "null" ]; then
             echo "WARNING: Image $tag already exists, it was created on ${created}. "
         fi
-        [ -f Dockerfile ] && docker buildx build --platform linux/amd64 --load -t $tag .
+        DOCKER_BUILD_PLATFORMS=${DOCKER_BUILD_PLATFORMS:-linux/amd64}
+        if [ "$DOCKER_BUILD_NO_CACHE" = "true" ]; then
+            DOCKER_BUILD_NO_CACHE="--no-cache"
+        else
+            DOCKER_BUILD_NO_CACHE=""
+        fi
+        echo "Building image $tag for platforms $DOCKER_BUILD_PLATFORMS with args: $DOCKER_BUILD_NO_CACHE"
+        # [ -f Dockerfile ] && docker buildx build --platform $DOCKER_BUILD_PLATFORMS $DOCKER_BUILD_NO_CACHE --load -t $tag .
+        [ -f Dockerfile ] && docker buildx build --platform $DOCKER_BUILD_PLATFORMS $DOCKER_BUILD_NO_CACHE --push -t $tag .
         [ ! -f Dockerfile ] && (command pack &> /dev/null && pack build $tag $@ || echo "No Dockerfile or pack CLI found. Cannot build image")
         ;;
     push)

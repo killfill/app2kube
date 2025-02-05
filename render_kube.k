@@ -5,7 +5,6 @@ import k8s.api.core.v1 as k8core
 import k8s.api.apps.v1 as k8apps
 import k8s.api.networking.v1 as k8snet
 
-_def_labels = {renderBy: 'app2kube'}
 _def_annotations = {renderBy: 'app2kube'}
 
 kubeRender = lambda app: model.WebApp {
@@ -79,8 +78,9 @@ kubeRender = lambda app: model.WebApp {
     }
     _ingress = app.ingress and k8snet.Ingress {
         metadata = _common_metadata
+        metadata.annotations = metadata.annotations | app.ingress.annotations
         if app.ingress.tls:
-            metadata.annotations = app.annotations | {"kubernetes.io/tls-acme": "true"}
+            metadata.annotations = metadata.annotations | {"kubernetes.io/tls-acme": "true"}
         spec = k8snet.IngressSpec {
             if app.ingress.class:
                 ingressClassName = app.ingress.class

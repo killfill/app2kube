@@ -21,6 +21,7 @@ schema Ingress:
     class: str = ""
     tls: bool = False
     path: str = "/"
+    annotations: {str:str} = {}
 
 schema Volume:
     name: str
